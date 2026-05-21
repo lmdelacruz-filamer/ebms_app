@@ -1,0 +1,109 @@
+{% extends "layout/base.html" %}
+
+{% block 'title' %} Categories · EBMS {% endblock 'title' %}
+
+{% block 'content' %}
+
+{% include "include/Sidebar.html" %}
+{% include "include/ToastMessage.html" %}
+
+{# hazard tape #}
+<div class="h-1.5 mb-5 rounded-sm bg-[repeating-linear-gradient(135deg,#F5B400_0_12px,#1E1D1A_12px_24px)]"></div>
+<div class="mb-8 pb-6 border-b border-bone-200 flex items-end justify-between flex-wrap gap-4">
+    <div>
+        <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-rust-700 mb-2">02 · Inventory</div>
+        <h1 class="font-display font-extrabold uppercase tracking-tight leading-none text-ink-900 text-5xl md:text-6xl">Categories</h1>
+        <p class="text-sm text-ink-200 mt-3 max-w-2xl">Group equipment by type. Categories cannot be deleted while equipment is still assigned to them.</p>
+    </div>
+    <a href="/category/add" class="btn-primary inline-flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/>
+        </svg>
+        New Category
+    </a>
+</div>
+
+<div class="bg-bone-50 border border-bone-200 rounded-lg overflow-hidden">
+
+    <div class="px-6 py-4 border-b border-bone-200 flex items-center justify-between gap-4 flex-wrap">
+        <div>
+            <h2 class="font-display text-xl font-bold uppercase tracking-wide text-ink-900">All Categories</h2>
+            <div class="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200 mt-0.5">{{ page_obj.paginator.count }} categor{{ page_obj.paginator.count|pluralize:"y,ies" }} on file</div>
+        </div>
+
+        <form method="GET" action="/category/list" class="flex items-center gap-2">
+            <div class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-ink-200 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
+                </svg>
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Search by name…" class="w-64 pl-9 pr-4 py-2 bg-bone-100 border border-bone-300 rounded-md text-sm outline-none hover:border-bone-400 focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" />
+            </div>
+            {% if search_query %}
+                <a href="/category/list" class="px-3 py-2 text-xs font-mono uppercase tracking-wider text-ink-200 hover:text-ink-900 transition-colors">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-bone-100/60 border-b border-bone-200">
+                <tr>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Category</th>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Description</th>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Equipment Count</th>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-bone-200">
+                {% for category in categories %}
+                <tr class="scanner-row">
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-semibold text-ink-900">{{ category.name }}</div>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-ink-700 max-w-md">
+                        {% if category.description %}{{ category.description|truncatechars:100 }}{% else %}<span class="text-ink-200 italic">—</span>{% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="font-mono text-xs px-2 py-0.5 bg-bone-200 text-ink-700 rounded whitespace-nowrap">{{ category.total_units }} unit{{ category.total_units|pluralize }}</span>
+                        <div class="font-mono text-[10px] text-ink-200 mt-0.5">across {{ category.equipments.count }} item{{ category.equipments.count|pluralize }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="/category/edit/{{ category.category_id }}" class="btn-sm-edit inline-flex items-center">
+                                Edit
+                            </a>
+                            <a href="/category/delete/{{ category.category_id }}" class="btn-sm-delete inline-flex items-center">
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-14 text-center">
+                        <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-200">no categories yet</div>
+                        <p class="text-sm text-ink-700 mt-2">{% if search_query %}No categories match "{{ search_query }}".{% else %}Add your first category to start organizing equipment.{% endif %}</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="px-6 py-4 border-t border-bone-200 flex items-center justify-between">
+        <p class="font-mono text-[11px] uppercase tracking-wider text-ink-200">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</p>
+        <div class="flex items-center gap-2">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-700 bg-bone-200 hover:bg-bone-300 rounded transition-colors">← Prev</a>
+            {% endif %}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-700 bg-bone-200 hover:bg-bone-300 rounded transition-colors">Next →</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock 'content' %}

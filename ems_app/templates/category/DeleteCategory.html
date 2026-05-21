@@ -1,0 +1,61 @@
+{% extends "layout/base.html" %}
+
+{% block 'title' %} Delete Category · EBMS {% endblock 'title' %}
+
+{% block 'content' %}
+
+{% include "include/Sidebar.html" %}
+{% include "include/ToastMessage.html" %}
+
+<div class="h-1.5 mb-5 rounded-sm bg-[repeating-linear-gradient(135deg,#F5B400_0_12px,#1E1D1A_12px_24px)]"></div>
+<div class="mb-8 pb-6 border-b border-bone-200">
+    <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-oxblood-500 mb-2">
+        <a href="/category/list" class="hover:text-oxblood-700">Categories</a> · Delete
+    </div>
+    <h1 class="font-display font-extrabold uppercase tracking-tight leading-none text-ink-900 text-5xl md:text-6xl">Delete Category?</h1>
+    <p class="text-sm text-ink-200 mt-3 max-w-2xl">This will permanently remove the category. Only allowed when no equipment is assigned to it.</p>
+</div>
+
+<div class="max-w-xl">
+
+    <div class="bg-oxblood-50 border-l-4 border-oxblood-500 rounded-r-md p-4 mb-5 flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-oxblood-500 shrink-0 mt-0.5" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <p class="font-semibold text-oxblood-900 text-sm leading-tight">This action cannot be undone</p>
+            <p class="text-xs text-oxblood-700 mt-1">Once removed, this category will no longer appear in the dropdowns.</p>
+        </div>
+    </div>
+
+    <div class="bg-bone-50 border border-bone-200 rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-bone-200 bg-bone-100/60">
+            <h2 class="font-display text-xl font-bold uppercase tracking-wide text-ink-900">Confirm Deletion</h2>
+        </div>
+
+        <div class="p-6">
+            <dl class="grid grid-cols-2 gap-x-6 gap-y-4 mb-6">
+                <div class="col-span-2">
+                    <dt class="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Name</dt>
+                    <dd class="text-base font-semibold text-ink-900 mt-1">{{ category.name }}</dd>
+                </div>
+                <div class="col-span-2">
+                    <dt class="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Description</dt>
+                    <dd class="text-sm text-ink-700 mt-1">{% if category.description %}{{ category.description }}{% else %}<span class="text-ink-200 italic">—</span>{% endif %}</dd>
+                </div>
+                <div>
+                    <dt class="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Equipment In Category</dt>
+                    <dd class="text-sm font-mono text-ink-700 mt-1">{{ category.equipments.count }} item{{ category.equipments.count|pluralize }}</dd>
+                </div>
+            </dl>
+
+            <form method="POST" action="/category/delete/{{ category.category_id }}" class="flex items-center gap-3">
+                {% csrf_token %}
+                <a href="/category/list" class="btn-secondary flex-1 text-center">Cancel</a>
+                <button type="submit" class="btn-danger flex-1 text-center">Yes, Delete Category</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock 'content' %}

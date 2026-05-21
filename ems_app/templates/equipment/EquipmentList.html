@@ -1,0 +1,133 @@
+{% extends "layout/base.html" %}
+
+{% block 'title' %} Equipment · EBMS {% endblock 'title' %}
+
+{% block 'content' %}
+
+{% include "include/Sidebar.html" %}
+{% include "include/ToastMessage.html" %}
+
+{# hazard tape #}
+<div class="h-1.5 mb-5 rounded-sm bg-[repeating-linear-gradient(135deg,#F5B400_0_12px,#1E1D1A_12px_24px)]"></div>
+<div class="mb-8 pb-6 border-b border-bone-200 flex items-end justify-between flex-wrap gap-4">
+    <div>
+        <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-rust-700 mb-2">03 · Inventory</div>
+        <h1 class="font-display font-extrabold uppercase tracking-tight leading-none text-ink-900 text-5xl md:text-6xl">Equipment</h1>
+        <p class="text-sm text-ink-200 mt-3 max-w-2xl">Every machine, instrument, and tool on the floor. Borrowed items are locked from edits until they're returned.</p>
+    </div>
+    <a href="/equipment/add" class="btn-primary inline-flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/>
+        </svg>
+        Add Equipment
+    </a>
+</div>
+
+<div class="bg-bone-50 border border-bone-200 rounded-lg overflow-hidden">
+
+    <div class="px-6 py-4 border-b border-bone-200 flex items-center justify-between gap-4 flex-wrap">
+        <div>
+            <h2 class="font-display text-xl font-bold uppercase tracking-wide text-ink-900">Inventory Roster</h2>
+            <div class="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200 mt-0.5">{{ page_obj.paginator.count }} unit{{ page_obj.paginator.count|pluralize }} tracked</div>
+        </div>
+
+        {# search + category filter — same GET form #}
+        <form method="GET" action="/equipment/list" class="flex items-center gap-2 flex-wrap">
+            <select name="category" class="px-3 py-2 bg-bone-100 border border-bone-300 rounded-md text-xs font-mono uppercase tracking-wider text-ink-700 outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.category_id }}" {% if category_filter == cat.category_id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            <div class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-ink-200 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
+                </svg>
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Search code, name, brand…" class="w-64 pl-9 pr-4 py-2 bg-bone-100 border border-bone-300 rounded-md text-sm outline-none hover:border-bone-400 focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" />
+            </div>
+            <button type="submit" class="px-3 py-2 text-xs font-mono uppercase tracking-wider text-bone-50 bg-ink-900 hover:bg-ink-700 rounded transition-colors">Filter</button>
+            {% if search_query or category_filter %}
+                <a href="/equipment/list" class="px-3 py-2 text-xs font-mono uppercase tracking-wider text-ink-200 hover:text-ink-900 transition-colors">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-bone-100/60 border-b border-bone-200">
+                <tr>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Photo</th>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Equipment</th>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Code</th>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Category</th>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200">Status</th>
+                    <th scope="col" class="px-6 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-bone-200">
+                {% for equipment in equipments %}
+                <tr class="scanner-row">
+                    <td class="px-6 py-3">
+                        {% if equipment.photo %}
+                            <img src="{{ equipment.photo.url }}" alt="{{ equipment.equipment_name }}" class="w-12 h-12 object-cover rounded border border-bone-300" />
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3">
+                        <div class="text-sm font-semibold text-ink-900">{{ equipment.equipment_name }}</div>
+                        <div class="text-xs text-ink-200 mt-0.5">{{ equipment.brand }}</div>
+                    </td>
+                    <td class="px-6 py-3">
+                        <span class="font-mono text-xs px-2 py-0.5 bg-bone-200 text-ink-700 rounded whitespace-nowrap">{{ equipment.equipment_code }}</span>
+                    </td>
+                    <td class="px-6 py-3 text-xs text-ink-700">{% if equipment.category %}{{ equipment.category.name }}{% else %}<span class="text-ink-200 italic">—</span>{% endif %}</td>
+                    <td class="px-6 py-3">
+                        {% if equipment.available_quantity == equipment.total_quantity %}
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-moss-50 text-moss-700 text-[10px] font-mono uppercase tracking-wider rounded-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-moss-500"></span>{{ equipment.available_quantity }} / {{ equipment.total_quantity }} Available
+                            </span>
+                        {% elif equipment.available_quantity == 0 %}
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-rust-50 text-rust-700 text-[10px] font-mono uppercase tracking-wider rounded-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rust-500"></span>0 / {{ equipment.total_quantity }} All Out
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-mustard-50 text-mustard-700 text-[10px] font-mono uppercase tracking-wider rounded-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-mustard-500"></span>{{ equipment.available_quantity }} / {{ equipment.total_quantity }} Left
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3">
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="/equipment/edit/{{ equipment.equipment_id }}" class="btn-sm-edit inline-flex items-center">Edit</a>
+                            <a href="/equipment/delete/{{ equipment.equipment_id }}" class="btn-sm-delete inline-flex items-center">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-14 text-center">
+                        <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-200">no equipment yet</div>
+                        <p class="text-sm text-ink-700 mt-2">{% if search_query or category_filter %}No equipment matches the current filter.{% else %}Add your first piece of equipment to start tracking.{% endif %}</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="px-6 py-4 border-t border-bone-200 flex items-center justify-between">
+        <p class="font-mono text-[11px] uppercase tracking-wider text-ink-200">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</p>
+        <div class="flex items-center gap-2">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-700 bg-bone-200 hover:bg-bone-300 rounded transition-colors">← Prev</a>
+            {% endif %}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-700 bg-bone-200 hover:bg-bone-300 rounded transition-colors">Next →</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock 'content' %}

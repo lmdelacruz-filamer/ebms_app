@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "tailwind": "@tailwindcss -i ./ems_app/static/css/input.css -o ./ems_app/static/css/output.css --watch"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.4",
+    "tailwindcss": "^4.2.4"
+  }
+}

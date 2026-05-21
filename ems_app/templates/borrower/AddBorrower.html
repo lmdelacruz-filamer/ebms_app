@@ -1,0 +1,62 @@
+{% extends "layout/base.html" %}
+
+{% block 'title' %} Add Borrower · EBMS {% endblock 'title' %}
+
+{% block 'content' %}
+
+{% include "include/Sidebar.html" %}
+{% include "include/ToastMessage.html" %}
+
+<div class="mb-8 pb-6 border-b border-bone-200">
+    <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-rust-700 mb-2">
+        <a href="/borrower/list" class="hover:text-rust-700">Borrowers</a> · New
+    </div>
+    <h1 class="font-display font-extrabold uppercase tracking-tight leading-none text-ink-900 text-5xl md:text-6xl">Register a Borrower</h1>
+    <p class="text-sm text-ink-200 mt-3 max-w-2xl">Add a new authorized borrower. Reference ID is the employee or student number used to identify them.</p>
+</div>
+
+<div class="max-w-2xl">
+    <div class="bg-bone-50 border border-bone-200 rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-bone-200 bg-ink-900">
+            <h2 class="font-display text-xl font-bold uppercase tracking-wide text-bone-50">New Record</h2>
+            <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-bone-400 mt-0.5">INSERT</div>
+        </div>
+
+        <div class="p-6">
+            <form action="/borrower/add" method="POST" class="space-y-5">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+
+                    <div class="space-y-1.5 md:col-span-2">
+                        <label for="borrower_name" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Full Name <span class="text-rust-700">*</span></label>
+                        <input type="text" placeholder="e.g. Juan Dela Cruz" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" name="borrower_name" id="borrower_name" required />
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="reference_id" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Reference ID <span class="text-rust-700">*</span></label>
+                        <input type="text" placeholder="Employee / Student ID" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm font-mono outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" name="reference_id" id="reference_id" required />
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="borrower_contact" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Contact Number <span class="text-rust-700">*</span></label>
+                        <input type="text" placeholder="09xxxxxxxxx" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm font-mono outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" name="borrower_contact" id="borrower_contact" required />
+                    </div>
+
+                    <div class="space-y-1.5 md:col-span-2">
+                        <label for="borrower_address" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Address <span class="text-rust-700">*</span></label>
+                        <textarea placeholder="Complete address" rows="3" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 resize-none transition-all" name="borrower_address" id="borrower_address" required></textarea>
+                    </div>
+
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <a href="/borrower/list" class="btn-secondary flex-1 text-center">Cancel</a>
+                    <button type="submit" class="btn-primary">Save Borrower</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock 'content' %}

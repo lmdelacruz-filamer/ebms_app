@@ -1,0 +1,96 @@
+{% extends "layout/base.html" %}
+
+{% block 'title' %} Edit Equipment · EBMS {% endblock 'title' %}
+
+{% block 'content' %}
+
+{% include "include/Sidebar.html" %}
+{% include "include/ToastMessage.html" %}
+
+<div class="h-1.5 mb-5 rounded-sm bg-[repeating-linear-gradient(135deg,#F5B400_0_12px,#1E1D1A_12px_24px)]"></div>
+<div class="mb-8 pb-6 border-b border-bone-200">
+    <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-rust-700 mb-2">
+        <a href="/equipment/list" class="hover:text-rust-700">Equipment</a> · Edit
+    </div>
+    <h1 class="font-display font-extrabold uppercase tracking-tight leading-none text-ink-900 text-5xl md:text-6xl">Edit Equipment</h1>
+    <p class="text-sm text-ink-200 mt-3 max-w-2xl">Update equipment details. Locked while the item is currently borrowed — process the return first.</p>
+</div>
+
+<div class="max-w-3xl">
+
+    {# identity strip and shows what you're editing, current photo if any #}
+    <div class="bg-ink-900 text-bone-100 rounded-t-lg px-6 py-4 flex items-center gap-4">
+        {% if equipment.photo %}
+            <img src="{{ equipment.photo.url }}" alt="{{ equipment.equipment_name }}" class="w-14 h-14 object-cover rounded border border-ink-700" />
+        {% else %}
+            <div class="w-14 h-14 rounded bg-rust-500 text-ink-900 flex items-center justify-center font-display font-bold text-2xl uppercase hover:-rotate-2 hover:scale-105 hover:shadow-lg transition-all">
+                {{ equipment.equipment_name|slice:":1"|upper }}
+            </div>
+        {% endif %}
+        <div>
+            <div class="font-display text-xl font-semibold text-bone-50">{{ equipment.equipment_name }}</div>
+            <div class="font-mono text-[10px] uppercase tracking-[0.15em] text-bone-400 mt-0.5">{{ equipment.equipment_code }}</div>
+        </div>
+    </div>
+
+    <div class="bg-bone-50 border border-bone-200 border-t-0 rounded-b-lg overflow-hidden">
+        <div class="p-6">
+            <form method="POST" enctype="multipart/form-data" class="space-y-5">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+
+                    <div class="space-y-1.5">
+                        <label for="equipment_code" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Equipment Code <span class="text-rust-700">*</span></label>
+                        <input type="text" value="{{ equipment.equipment_code }}" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm font-mono outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" name="equipment_code" id="equipment_code" required />
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="equipment_name" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Name <span class="text-rust-700">*</span></label>
+                        <input type="text" value="{{ equipment.equipment_name }}" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" name="equipment_name" id="equipment_name" required />
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="brand" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Brand <span class="text-rust-700">*</span></label>
+                        <input type="text" value="{{ equipment.brand }}" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" name="brand" id="brand" required />
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="category" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Category <span class="text-rust-700">*</span></label>
+                        <select name="category" id="category" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" required>
+                            <option value="">— select category —</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.category_id }}" {% if equipment.category and equipment.category.category_id == cat.category_id %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="space-y-1.5 md:col-span-2">
+                        <label for="total_quantity" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Total Quantity <span class="text-rust-700">*</span></label>
+                        <input type="number" min="1" step="1" value="{{ equipment.total_quantity }}" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm font-mono outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" name="total_quantity" id="total_quantity" required />
+                        <p class="font-mono text-[10px] uppercase tracking-wider text-ink-200">{{ equipment.available_quantity }} of {{ equipment.total_quantity }} on the shelf</p>
+                    </div>
+
+                    <div class="space-y-1.5 md:col-span-2">
+                        <label for="photo" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Replace Photo</label>
+                        <input type="file" name="photo" id="photo" accept="image/*" class="w-full text-sm text-ink-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-ink-900 file:text-bone-50 file:font-mono file:text-[10px] file:uppercase file:tracking-wider hover:file:bg-ink-700 file:cursor-pointer cursor-pointer" />
+                        <p class="font-mono text-[10px] uppercase tracking-wider text-ink-200">leave blank to keep the current photo</p>
+                    </div>
+
+                    <div class="space-y-1.5 md:col-span-2">
+                        <label for="description" class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-700 block">Description</label>
+                        <textarea rows="3" class="w-full px-4 py-2.5 bg-bone-100 border border-bone-300 rounded-md text-sm outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 resize-none transition-all" name="description" id="description">{{ equipment.description }}</textarea>
+                    </div>
+
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <a href="/equipment/list" class="btn-secondary flex-1 text-center">Back</a>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock 'content' %}

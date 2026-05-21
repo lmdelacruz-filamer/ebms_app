@@ -1,0 +1,249 @@
+@import 'tailwindcss';
+
+/* Heavy-equipment industrial yellow accent. */
+
+@theme {
+  /* Barlow Condensed for industrial display, Bricolage Grotesque for body text, JetBrains Mono for codes and labels. */
+  --font-display: 'Barlow Condensed', 'Impact', 'Arial Narrow', sans-serif;
+  --font-sans: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* bone — concrete, worn paper canvas family */
+  --color-bone-50: #FAF7EF;
+  --color-bone-100: #ECE5D2;
+  --color-bone-200: #DDD5C2;
+  --color-bone-300: #C2BBA8;
+  --color-bone-400: #9D9586;
+  --color-bone-500: #6E6862;
+
+  /* ink — iron black family for text and the dark sidebar */
+  --color-ink-50: #8E867A;
+  --color-ink-200: #5C5853;
+  --color-ink-400: #3A3733;
+  --color-ink-700: #252522;
+  --color-ink-900: #1E1D1A;
+  --color-ink-950: #0E0D0B;
+
+  /* rust — yellow (primary accent). buttons that use bg-rust-500 must use DARK text (text-ink-900). */
+  --color-rust-50: #FFF8DC;
+  --color-rust-100: #FFEDA8;
+  --color-rust-200: #FCDD6E;
+  --color-rust-500: #F4B400;
+  --color-rust-600: #D89A00;
+  --color-rust-700: #A67400;
+  --color-rust-900: #4A3500;
+
+  /* moss — success states (available equipment, returned records) */
+  --color-moss-50: #EDF2DD;
+  --color-moss-100: #D5DFB4;
+  --color-moss-200: #B5C880;
+  --color-moss-500: #5A7825;
+  --color-moss-700: #3D5217;
+  --color-moss-900: #22300E;
+
+  /* mustard — warning, distinct from primary yellow */
+  --color-mustard-50: #F8EDD0;
+  --color-mustard-100: #EFD79A;
+  --color-mustard-200: #E2C26C;
+  --color-mustard-500: #9B6A0A;
+  --color-mustard-700: #654505;
+  --color-mustard-900: #3A2603;
+
+  /* oxblood — danger or destructive actions */
+  --color-oxblood-50: #F7DEDE;
+  --color-oxblood-100: #ECB8B8;
+  --color-oxblood-200: #DC8888;
+  --color-oxblood-500: #A02C2C;
+  --color-oxblood-600: #842424;
+  --color-oxblood-700: #6C1C1C;
+  --color-oxblood-900: #2F0C0C;
+}
+
+
+/* Each button has a thick dark bottom border for a tactile feel. On click, the border shrinks and the button presses down 2px. */
+
+@utility btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-rust-500);
+  color: var(--color-ink-900);
+  padding: 11px 18px 11px 30px;
+  border-radius: 4px;
+  border: 0;
+  border-bottom: 4px solid var(--color-ink-900);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+}
+@utility btn-primary {
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 4px;
+    width: 18px;
+    background: repeating-linear-gradient(135deg, var(--color-ink-900) 0 5px, transparent 5px 10px);
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+  }
+  &:hover {
+    background: var(--color-rust-600);
+  }
+  &:active {
+    border-bottom-width: 2px;
+    transform: translateY(2px);
+  }
+}
+
+@utility btn-secondary {
+  background: var(--color-bone-200);
+  color: var(--color-ink-900);
+  padding: 11px 22px;
+  border-radius: 4px;
+  border: 0;
+  border-bottom: 4px solid var(--color-bone-400);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+}
+@utility btn-secondary {
+  &:hover {
+    background: var(--color-bone-300);
+  }
+  &:active {
+    border-bottom-width: 2px;
+    transform: translateY(2px);
+  }
+}
+
+@utility btn-danger {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-oxblood-500);
+  color: var(--color-bone-50);
+  padding: 11px 22px 11px 44px;
+  border-radius: 4px;
+  border: 0;
+  border-bottom: 4px solid #5C1010;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+}
+@utility btn-danger {
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 4px;
+    width: 30px;
+    background: repeating-linear-gradient(135deg, var(--color-ink-900) 0 6px, var(--color-rust-500) 6px 12px);
+    border-right: 1.5px solid rgba(0, 0, 0, 0.4);
+  }
+  &:hover {
+    background: var(--color-oxblood-600);
+  }
+  &:active {
+    border-bottom-width: 2px;
+    transform: translateY(2px);
+  }
+}
+
+@utility btn-sm-edit {
+  background: var(--color-bone-200);
+  color: var(--color-ink-900);
+  padding: 5px 12px;
+  border-radius: 3px;
+  border: 0;
+  border-bottom: 3px solid var(--color-bone-400);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+}
+@utility btn-sm-edit {
+  &:hover {
+    background: var(--color-bone-300);
+  }
+  &:active {
+    border-bottom-width: 1px;
+    transform: translateY(2px);
+  }
+}
+
+@utility btn-sm-delete {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-oxblood-500);
+  color: var(--color-bone-50);
+  padding: 5px 12px 5px 22px;
+  border-radius: 3px;
+  border: 0;
+  border-bottom: 3px solid #5C1010;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+}
+@utility btn-sm-delete {
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 3px;
+    width: 14px;
+    background: repeating-linear-gradient(135deg, var(--color-ink-900) 0 4px, var(--color-rust-500) 4px 8px);
+  }
+  &:hover {
+    background: var(--color-oxblood-600);
+  }
+  &:active {
+    border-bottom-width: 1px;
+    transform: translateY(2px);
+  }
+}
+
+
+/* Scanner line hover */
+
+.scanner-row {
+  position: relative;
+  background-image: linear-gradient(180deg, transparent 0%, transparent calc(50% - 1px), #F4B400 calc(50% - 1px), #F4B400 calc(50% + 1px), transparent calc(50% + 1px), transparent 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 0px;
+  background-position-y: 0%;
+  box-shadow: inset 3px 0 0 -3px #F4B400;
+  transition:
+    background-color 150ms ease,
+    background-size 100ms ease,
+    background-position-y 450ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 80ms ease 350ms,
+    color 150ms ease;
+}
+
+.scanner-row:hover {
+  background-color: rgba(244, 180, 0, 0.05);
+  background-size: 100% 2px;
+  background-position-y: 100%;
+  box-shadow: inset 3px 0 0 0 #F4B400;
+}
+
+.scanner-row-active {
+  position: relative;
+  box-shadow: inset 4px 0 0 0 #1E1D1A;
+}

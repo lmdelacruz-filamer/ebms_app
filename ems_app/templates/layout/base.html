@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static '/css/output.css' %}">
+    <title>{% block 'title' %} EBMS {% endblock 'title' %}</title>
+</head>
+<body class="font-sans bg-bone-100 text-ink-900 antialiased">
+    {% block 'content' %} {% endblock 'content' %}
+    <script defer src="{% static '/js/auto_hide_toast.js' %}"></script>
+    <script defer src="{% static '/js/sidebar_toggle.js' %}"></script>
+</body>
+</html>
