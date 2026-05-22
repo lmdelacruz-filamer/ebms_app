@@ -357,13 +357,18 @@ def add_equipment(request):
                 messages.error(request, 'Please fill in all required fields.')
                 return render(request, 'equipment/AddEquipment.html', data)
 
-            # this validates the quantity is at least 1. so we cant just put zero.
+            # this validates the quantity is at least 1 and at most 50 per equipment
             try:
                 totalQuantity = int(totalQuantity)
                 if totalQuantity < 1:
                     raise ValueError()
             except (ValueError, TypeError):
                 messages.error(request, 'Total quantity must be a whole number of 1 or more.')
+                return render(request, 'equipment/AddEquipment.html', data)
+
+            # enforce the maximum of 50 units per equipment
+            if totalQuantity > 50:
+                messages.error(request, 'Total quantity cannot exceed 50 units per equipment.')
                 return render(request, 'equipment/AddEquipment.html', data)
 
             # this checks the duplicate equipment code, if there is a duplicate it wont save and will return a toast error
@@ -420,13 +425,18 @@ def edit_equipment(request, equipmentId):
                 messages.error(request, 'Please fill in all required fields.')
                 return render(request, 'equipment/EditEquipment.html', data)
 
-            # this validates the quantity is at least 1
+            # this validates the quantity is at least 1 and at most 50
             try:
                 totalQuantity = int(totalQuantity)
                 if totalQuantity < 1:
                     raise ValueError()
             except (ValueError, TypeError):
                 messages.error(request, 'Total quantity must be a whole number of 1 or more.')
+                return render(request, 'equipment/EditEquipment.html', data)
+
+            # enforce the maximum of 50 units per equipment
+            if totalQuantity > 50:
+                messages.error(request, 'Total quantity cannot exceed 50 units per equipment.')
                 return render(request, 'equipment/EditEquipment.html', data)
 
             # this checks the duplicate equipment_code excluding the current one
