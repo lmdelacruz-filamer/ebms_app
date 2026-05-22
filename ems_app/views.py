@@ -93,6 +93,9 @@ def borrower_list(request):
         else:
             borrowerObj = Borrowers.objects.all()
 
+        # sort by reference_id so the list regardless of when each borrower was added or last edited
+        borrowerObj = borrowerObj.order_by('reference_id')
+
         # this one is for pagination. 15 borrowers per page only
         paginator = Paginator(borrowerObj, 15)
         page_number = request.GET.get('page')
@@ -121,6 +124,11 @@ def add_borrower(request):
             # this check validation requirements to fill the blank fields
             if not referenceId or not borrowerName or not borrowerContact or not borrowerAddress:
                 messages.error(request, 'Please fill in all required fields.')
+                return render(request, 'borrower/AddBorrower.html')
+
+            # this checks for a duplicate reference ID 
+            if Borrowers.objects.filter(reference_id=referenceId).exists():
+                messages.error(request, f'Reference ID "{referenceId}" is already registered to another borrower.')
                 return render(request, 'borrower/AddBorrower.html')
 
             Borrowers.objects.create(
@@ -159,6 +167,11 @@ def edit_borrower(request, borrowerId):
             # this check validation requirements to fill the blank fields
             if not referenceId or not borrowerName or not borrowerContact or not borrowerAddress:
                 messages.error(request, 'Please fill in all required fields.')
+                return render(request, 'borrower/EditBorrower.html', data)
+
+            # this checks for a duplicate reference ID, excluding the borrower being edited
+            if Borrowers.objects.filter(reference_id=referenceId).exclude(pk=borrowerId).exists():
+                messages.error(request, f'Reference ID "{referenceId}" is already registered to another borrower.')
                 return render(request, 'borrower/EditBorrower.html', data)
 
             borrowerObj.reference_id = referenceId
