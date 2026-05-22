@@ -304,7 +304,9 @@ def equipment_list(request):
         search_query = request.GET.get('search', '')
         category_filter = request.GET.get('category', '')
 
-        equipmentObj = Equipments.objects.select_related('category').all()
+        # sort by equipment_code so the list always reads EQ-001, EQ-002, ... in order,
+        # regardless of when each item was added to the system
+        equipmentObj = Equipments.objects.select_related('category').all().order_by('equipment_code')
 
         if search_query:
             equipmentObj = (
@@ -499,7 +501,9 @@ def borrow_form(request):
         # this lists every equipment that is currently borrowed 
         borrow_records = BorrowRecords.objects.filter(status='borrowed').select_related('equipment', 'borrower').order_by('-borrow_date')
 
-        # today's date used as the minimum for the return date picker while the min attribute still blocks selecting any date in the past.
+        # today's date used as the minimum for the return date picker.
+        # allowing today enables same-day loans (borrow and return within the same day),
+        # while the min attribute still blocks selecting any date in the past.
         today_date = date.today().isoformat()
 
         data = {
