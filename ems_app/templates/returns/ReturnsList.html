@@ -85,8 +85,14 @@
             <div class="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-200 mt-0.5">{{ returned_page_obj.paginator.count }} returned record{{ returned_page_obj.paginator.count|pluralize }} on file</div>
         </div>
 
-        {# search bar — filters returned records by equipment / borrower / code #}
-        <form method="GET" action="/returns" class="flex items-center gap-2">
+        {# search bar + category dropdown filter — same GET form #}
+        <form method="GET" action="/returns" class="flex items-center gap-2 flex-wrap">
+            <select name="return_category" class="px-3 py-2 bg-bone-100 border border-bone-300 rounded-md text-xs font-mono uppercase tracking-wider text-ink-700 outline-none focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all">
+                <option value="">All Categories</option>
+                {% for cat in return_categories %}
+                    <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
             <div class="relative">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-ink-200 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true">
                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
@@ -94,7 +100,7 @@
                 <input type="text" name="return_search" value="{{ return_search }}" placeholder="Search borrower, equipment, code…" class="w-64 pl-9 pr-4 py-2 bg-bone-100 border border-bone-300 rounded-md text-sm outline-none hover:border-bone-400 focus:bg-bone-50 focus:border-ink-900 focus:ring-4 focus:ring-ink-900/5 transition-all" />
             </div>
             <button type="submit" class="px-3 py-2 text-xs font-mono uppercase tracking-wider text-bone-50 bg-ink-900 hover:bg-ink-700 rounded transition-colors">Filter</button>
-            {% if return_search %}
+            {% if return_search or category_filter %}
                 <a href="/returns" class="px-3 py-2 text-xs font-mono uppercase tracking-wider text-ink-200 hover:text-ink-900 transition-colors">Clear</a>
             {% endif %}
         </form>
@@ -117,7 +123,7 @@
                 <tr class="scanner-row">
                     <td class="px-6 py-3.5">
                         <div class="text-sm text-ink-900">{{ record.display_equipment_name }}</div>
-                        <div class="font-mono text-[10px] text-ink-200 mt-0.5">{{ record.display_equipment_code }}</div>
+                        <div class="font-mono text-[10px] text-ink-200 mt-0.5">{{ record.display_equipment_code }} · {{ record.display_category_name }}</div>
                     </td>
                     <td class="px-6 py-3.5">
                         <span class="font-mono text-xs px-2 py-0.5 bg-bone-200 text-ink-700 rounded whitespace-nowrap">× {{ record.quantity }}</span>
@@ -135,7 +141,7 @@
                 <tr>
                     <td colspan="6" class="px-6 py-14 text-center">
                         <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-200">no history yet</div>
-                        <p class="text-sm text-ink-700 mt-2">{% if return_search %}No returned records match "{{ return_search }}".{% else %}Returned records will show up here once items start coming back.{% endif %}</p>
+                        <p class="text-sm text-ink-700 mt-2">{% if return_search or category_filter %}No returned records match the current filter.{% else %}Returned records will show up here once items start coming back.{% endif %}</p>
                     </td>
                 </tr>
                 {% endfor %}
@@ -149,10 +155,10 @@
         <p class="font-mono text-[11px] uppercase tracking-wider text-ink-200">Page {{ returned_page_obj.number }} / {{ returned_page_obj.paginator.num_pages }}</p>
         <div class="flex items-center gap-2">
             {% if returned_page_obj.has_previous %}
-                <a href="?return_page={{ returned_page_obj.previous_page_number }}{% if return_search %}&return_search={{ return_search }}{% endif %}" class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-700 bg-bone-200 hover:bg-bone-300 rounded transition-colors">← Prev</a>
+                <a href="?return_page={{ returned_page_obj.previous_page_number }}{% if return_search %}&return_search={{ return_search }}{% endif %}{% if category_filter %}&return_category={{ category_filter }}{% endif %}" class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-700 bg-bone-200 hover:bg-bone-300 rounded transition-colors">← Prev</a>
             {% endif %}
             {% if returned_page_obj.has_next %}
-                <a href="?return_page={{ returned_page_obj.next_page_number }}{% if return_search %}&return_search={{ return_search }}{% endif %}" class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-700 bg-bone-200 hover:bg-bone-300 rounded transition-colors">Next →</a>
+                <a href="?return_page={{ returned_page_obj.next_page_number }}{% if return_search %}&return_search={{ return_search }}{% endif %}{% if category_filter %}&return_category={{ category_filter }}{% endif %}" class="px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-700 bg-bone-200 hover:bg-bone-300 rounded transition-colors">Next →</a>
             {% endif %}
         </div>
     </div>

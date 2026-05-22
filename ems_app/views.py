@@ -596,16 +596,31 @@ def returns_list(request):
         # all the equipment still on borrow shows at the top of the page and pending returns
         borrow_records = BorrowRecords.objects.filter(status='borrowed').order_by('-borrow_date')
 
-        # Returned history with search with pagination
+        # Returned history with search + category dropdown filter + pagination
         return_search = request.GET.get('return_search', '').strip()
+        category_filter = request.GET.get('return_category', '').strip()
         returned_qs = BorrowRecords.objects.filter(status='returned').order_by('-actual_return', '-created_at')
 
+        # text search covers borrower, equipment name, and equipment code
         if return_search:
             returned_qs = (
                 returned_qs.filter(borrower_name_snapshot__icontains=return_search) |
                 returned_qs.filter(equipment_name_snapshot__icontains=return_search) |
                 returned_qs.filter(equipment_code_snapshot__icontains=return_search)
             )
+
+        # category is a separate dropdown filter (matches the category snapshot exactly)
+        if category_filter:
+            returned_qs = returned_qs.filter(category_name_snapshot=category_filter)
+
+        # build the dropdown options from category names that actually appear in returned records
+        return_categories = (
+            BorrowRecords.objects.filter(status='returned')
+            .exclude(category_name_snapshot='')
+            .values_list('category_name_snapshot', flat=True)
+            .distinct()
+            .order_by('category_name_snapshot')
+        )
 
         # paginate 10 per page
         returned_paginator = Paginator(returned_qs, 10)
@@ -618,6 +633,8 @@ def returns_list(request):
             'returned_records': returned_page_obj,
             'returned_page_obj': returned_page_obj,
             'return_search': return_search,
+            'category_filter': category_filter,
+            'return_categories': return_categories,
         }
         return render(request, 'returns/ReturnsList.html', data)
     except Exception as e:
