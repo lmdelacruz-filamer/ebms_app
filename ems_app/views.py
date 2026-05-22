@@ -246,6 +246,11 @@ def add_category(request):
                 messages.error(request, 'Please fill in all required fields.')
                 return render(request, 'category/AddCategory.html')
 
+            # this checks for a duplicate category name (case-insensitive) so we dont end up with both "Heavy Equipment" and "heavy equipment"
+            if Categories.objects.filter(name__iexact=name.strip()).exists():
+                messages.error(request, f'Category "{name}" already exists. Please use a different name.')
+                return render(request, 'category/AddCategory.html')
+
             Categories.objects.create(name=name, description=description)
             messages.success(request, 'Category added successfully!')
             return redirect('/category/list')
@@ -276,6 +281,11 @@ def edit_category(request, categoryId):
 
             if not name:
                 messages.error(request, 'Please fill in all required fields.')
+                return render(request, 'category/EditCategory.html', data)
+
+            # this checks for a duplicate category name, excluding the category being edited
+            if Categories.objects.filter(name__iexact=name.strip()).exclude(pk=categoryId).exists():
+                messages.error(request, f'Category "{name}" already exists. Please use a different name.')
                 return render(request, 'category/EditCategory.html', data)
 
             categoryObj.name = name
