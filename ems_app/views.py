@@ -246,7 +246,7 @@ def add_category(request):
                 messages.error(request, 'Please fill in all required fields.')
                 return render(request, 'category/AddCategory.html')
 
-            # this checks for a duplicate category name (case-insensitive) so we dont end up with both "Heavy Equipment" and "heavy equipment"
+            # this checks for a duplicate category name (case-insensitive)
             if Categories.objects.filter(name__iexact=name.strip()).exists():
                 messages.error(request, f'Category "{name}" already exists. Please use a different name.')
                 return render(request, 'category/AddCategory.html')
@@ -327,8 +327,7 @@ def equipment_list(request):
         search_query = request.GET.get('search', '')
         category_filter = request.GET.get('category', '')
 
-        # sort by equipment_code so the list always reads EQ-001, EQ-002, ... in order,
-        # regardless of when each item was added to the system
+        # sort by equipment code regardless of when each item was added to the system
         equipmentObj = Equipments.objects.select_related('category').all().order_by('equipment_code')
 
         if search_query:
@@ -514,8 +513,7 @@ def borrow_form(request):
     try:
         from datetime import date, timedelta
 
-        # build a list of categories with their available equipment for the grouped dropdown.
-        # only categories that have at least one available equipment make it into this list.
+        # build a list of categories with their available equipment for the grouped dropdown. 
         categories_with_equipment = []
         max_available = 1  # used to set the quantity input's max attribute
         for cat in Categories.objects.all():
