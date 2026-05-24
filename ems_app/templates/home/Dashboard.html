@@ -13,8 +13,9 @@
 {# the page header #}
 <div class="mb-8 pb-6 border-b border-bone-200">
     <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-rust-700 mb-2">01 · System Overview</div>
-    <h1 class="font-display font-extrabold uppercase tracking-tight leading-none text-ink-900 text-5xl md:text-6xl">Dashboard</h1>
-    <p class="text-sm text-ink-200 mt-3 max-w-2xl">A live overview of every machine on the books — what's available, what's out, and who's holding what.</p>
+    {# JS GREETING — these two elements start empty; greeting.js fills them based on the system clock #}
+    <h1 id="greeting" data-name="{{ request.user.username|default:'Operator' }}" class="font-display font-extrabold uppercase tracking-tight leading-none text-ink-900 text-5xl md:text-6xl">Dashboard</h1>
+    <p id="greeting_sub" class="text-sm text-ink-200 mt-3 max-w-2xl">A live overview of every machine on the books — what's available, what's out, and who's holding what.</p>
 </div>
 
 {# three cards #} 
@@ -85,7 +86,7 @@
 </div>
 
 {# Borrowers row and recent activity log #}
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
 
     {# Card number 04 Registered Borrowers #}
     <div class="bg-ink-900 text-bone-100 rounded-sm flex flex-col">
@@ -108,9 +109,9 @@
 
     {# Log list  Recent Activity #}
     <div class="bg-bone-50 border border-bone-200 rounded-sm overflow-hidden lg:col-span-2 flex flex-col">
-        <div class="bg-bone-100 text-ink-700 px-4 py-2 flex items-center justify-between border-b border-bone-200">
-            <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-900">Recent Activity Log</span>
-            <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-200">LOG-01 · last 5 records</span>
+        <div class="bg-ink-900 text-bone-200 px-4 py-2 flex items-center justify-between border-b-[3px] border-rust-500">
+            <span class="font-mono text-[10px] uppercase tracking-[0.18em]">Activity Log</span>
+            <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-bone-500">last 5 records</span>
         </div>
 
         <div class="overflow-x-auto">

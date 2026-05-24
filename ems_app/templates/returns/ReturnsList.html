@@ -53,7 +53,11 @@
                         <div class="font-mono text-[10px] text-ink-200 mt-0.5">{{ record.display_borrower_contact }}</div>
                     </td>
                     <td class="px-6 py-3.5 font-mono text-xs text-ink-700">{{ record.borrow_date|date:"M d, Y" }}</td>
-                    <td class="px-6 py-3.5 font-mono text-xs text-ink-700">{{ record.expected_return|date:"M d, Y" }}</td>
+                    <td class="px-6 py-3.5 font-mono text-xs text-ink-700">
+                        {{ record.expected_return|date:"M d, Y" }}
+                        {# JS DUE-DATE COUNTDOWN — empty badge; the date is stored in data-due for the script to read #}
+                        <div class="due-badge mt-1 font-mono text-[10px] uppercase tracking-wider" data-due="{{ record.expected_return|date:'Y-m-d' }}"></div>
+                    </td>
                     <td class="px-6 py-3.5">
                         <div class="flex justify-end">
                             <a href="/returns/process/{{ record.record_id }}" onclick="return confirm('Accept the return of {{ record.quantity }} unit(s) of {{ record.display_equipment_name|escapejs }}? They will be marked back on the shelf.');" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono uppercase tracking-wider text-bone-50 bg-moss-500 hover:bg-moss-700 rounded transition-colors">
